@@ -12,7 +12,7 @@ Planen i projektuppgiften är att skapa spelet tetris i Python.
 Det här är första gången som vi jobbar i python och ser det som en rolig utmaning. 
 Tanken är att använda Pygame som libary när vi bygger spelet.
 
-I grunden bör det finnas en kunskap om spelets game mechanics, något som kan finnas [här](https://tetris.wiki/Tetris_Guideline).
+I grunden bör det finnas kunskap om spelets game mechanics, något som kan finnas [här](https://tetris.wiki/Tetris_Guideline).
 
 Efter detta bör vi implementera spelets funktioner, och utseende inlkudernade spelobjekt, men även input från spelaren så att det blir interaktivt.
 Ett poängsystem skulle också vara intressant och nivåer för spelaren.
