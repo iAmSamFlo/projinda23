@@ -17,4 +17,3 @@ class Figure:
         self.type = random.randint(0, len(self.figures) - 1)
         self.color = random.randint(0, (self.colors) - 1)
         self.rotation = 0
-        
