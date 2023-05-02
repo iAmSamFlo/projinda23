@@ -35,33 +35,25 @@ class Figure:
         return self.figures[self.type][self.rotation]  
     def rotate(self):
         self.rotation = (self.rotation + 1) % len(self.figures[self.type])
+    def blocks(delay):
+            #Update each block of the figure and reset it at the top if it reaches the bottom
+        for i, block in enumerate(figure.image()):
+            x = (block % 4) * 25 + figure.x
+            y = (block // 4) * 25 + figure.y[i]
+            pygame.draw.rect(screen, figure.color, (x, y, 25, 25))
+            figure.y[i] += figure.dy
         
+        pygame.time.delay(delay)
+
+        if figure.y[i] >= 480:
+            figure.y[i] = 0
+            figure.type = random.randint(0, len(figure.figures) - 1)
+            figure.color = (255, 255, 255)
+
+
 figure = Figure(100, 0)
     
-    #game loop
-while True:
-    #want to handle what happens
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-    screen.fill((0,0,0))
-    #Update each block of the figure and reset it at the top if it reaches the bottom
-    for i, block in enumerate(figure.image()):
-        x = (block % 4) * 25 + figure.x
-        y = (block // 4) * 25 + figure.y[i]
-        pygame.draw.rect(screen, figure.color, (x, y, 25, 25))
-        figure.y[i] += figure.dy
-    if figure.y[i] >= 480:
-        figure.y[i] = 0
-        figure.type = random.randint(0, len(figure.figures) - 1)
-        figure.color = (255, 255, 255)
-
-    pygame.display.flip()
-    pygame.display.update()
-    clock.tick(fps)
-        
+ 
         
     
             
