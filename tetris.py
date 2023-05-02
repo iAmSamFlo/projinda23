@@ -2,14 +2,14 @@ import random
 import sys
 import pygame
 pygame.init()
-screen_width = 600
-screen_height = 480
+screen_width = 1280
+screen_height = 720
 white = (255, 255, 255)
-screen = pygame.display.set_mode((screen_width, screen_height))
+block_size = 25
 WIN = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Tetris")
 clock = pygame.time.Clock()
-fps = 1
+#fps = 1
 
 class Figure:
     colors = [
@@ -23,35 +23,81 @@ class Figure:
     ] 
     
     #Type and color of block generated randomly
-    def __init__(self, x, y):
-        self.x = x
+    def __init__(self, height):
+        
+        self.x = 4
         self.y = [0] * 4
         self.type = random.randint(0, len(self.figures) - 1)
         self.color = (255, 255, 255)
         self.rotation = 0
-        self.dy = 25
-    
+        self.dy = block_size
+        self.locked = False
+        
+        self.current_block = self.figures[self.type][self.rotation]
+        #
+        
+        
+    """ 
+    def blocks(delay):
+        if not figure.locked:
+            #Update each block of the figure and reset it at the top if it reaches the bottom
+            for i, block in enumerate(figure.image()):
+                x = (block % 4) * block_size + figure.x
+                y = (block // 4) * block_size + figure.y[i]
+                pygame.draw.rect(WIN, figure.color, (x, y, block_size, block_size))
+                figure.y= [y + figure.dy for y in figure.y]
+                
+                if y >= screen_height - block_size:
+                    figure.locked = True
+                    break
+            
+            pygame.time.delay(delay)
+
+            # if figure.y[i] >= 480:
+            #     figure.y[i] = 0
+            #     figure.type = random.randint(0, len(figure.figures) - 1)
+            #     figure.color = (255, 255, 255) """
+            
     def image(self):
-        return self.figures[self.type][self.rotation]  
+        return self.figures[self.type][self.rotation]
+      
     def rotate(self):
         self.rotation = (self.rotation + 1) % len(self.figures[self.type])
-    def blocks(delay):
-            #Update each block of the figure and reset it at the top if it reaches the bottom
-        for i, block in enumerate(figure.image()):
-            x = (block % 4) * 25 + figure.x
-            y = (block // 4) * 25 + figure.y[i]
-            pygame.draw.rect(screen, figure.color, (x, y, 25, 25))
-            figure.y[i] += figure.dy
+        self.current_block = self.figures[self.type][self.rotation]
         
-        pygame.time.delay(delay)
+    def move_left(self):
+        self.x -= block_size
+    
+    def move_right(self):
+        self.x += block_size
+        
+    def lock(self):
+        self.locked = True
+    
+    def move_down(self):
+        for i in range(len(self.y)):
+            self.y[i] += self.dy
+        
+    def spawn(self):
+        self.type = random.randint(0, len(self.figures) - 1)
+        self.rotation = 0
+        self.current_block = self.figures[self.type][self.rotation]
+        self.x = 4
+        self.y = [0] * 4
+        self.color = (255, 255, 255)
+        self.locked = False
+    def get_blocks(self):
+        blocks = []
+        for i, block in enumerate(self.image):
+            x = (block % 4) * block_size + self.x
+            y = (block // 4) * block_size + self.y[i]
+            blocks.append(((x, y), self.colors))
+        return blocks
+        
+    
 
-        if figure.y[i] >= 480:
-            figure.y[i] = 0
-            figure.type = random.randint(0, len(figure.figures) - 1)
-            figure.color = (255, 255, 255)
 
-
-figure = Figure(100, 0)
+#figure = Figure(100, 0)
     
  
         
