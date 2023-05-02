@@ -39,11 +39,11 @@ def drawWindow(img, started):
 
     if not started:
         WIN.blit(pygame.font.SysFont('comicsans', 60).render('TETRIS', 1, RED), (100, 100))
-        WIN.blit(pygame.font.SysFont('comicsans', 60).render('Press SPACE to start playing', 1, RED), (400, 600))
+        WIN.blit(pygame.font.SysFont('comicsans', 40).render('Press SPACE to start playing', 1, RED), (400, 600))
     else:
         WIN.blit(pygame.font.SysFont('comicsans', 60).render('TETRIS', 1, RED), (100, 100))
     
-    pygame.draw.rect(WIN, WHITE, (515, -1, 250, 501), 1) #640 e mitten av skärmen. 
+    pygame.draw.rect(WIN, RED, (515, -1, 250, 501), 1) #640 e mitten av skärmen. 
     #Fabian säger att en cell är 25, vilket då menar att bredden blir 250 och höjd blir 500.
 
     pygame.display.update()
