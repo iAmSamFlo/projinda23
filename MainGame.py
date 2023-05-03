@@ -13,8 +13,8 @@ import pygame
 pygame.init()
 
 #Set up the screen
-WIN_WIDTH = 1280
-WIN_HEIGHT = 720
+WIN_WIDTH = 800
+WIN_HEIGHT = 600
 WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 pygame.display.set_caption("Tetris")
 
@@ -24,128 +24,203 @@ GRAY = (128, 128, 128)
 BlACK = (0, 0, 0)
 RED = (255, 0, 0)
 
-#To be changed
-delay = 500
 
-block_size = 25
+class Main:
+    level = 2 
+    score = 0
+    state = "start"
+    field = []
+    height = 0
+    width = 0
+    x = 100
+    y = 60
+    zoom = 20
+    figure = None
 
-# List of locked figures
-locked_figures = []
-# List of locked blocks
-locked_blocks = []
+    #Initialize the field
+    def __init__(self, height, width):
+        self.height = height
+        self.width = width
+        for i in range(height):
+            new_line = []
+            for j in range(width):
+                new_line.append(0)
+            self.field.append(new_line)
 
-def add_to_board(figures_blocks, locked_blocks):
-    for block in figures_blocks:
-        locked_blocks.append(block)
+    def new_figure(self):
+        self.figure = Figure(3, 0)
 
-#Draws the window
-def drawWindow(started, locked_figures):
-    WIN.fill(BlACK)
+    def intersects(self):
+        intersection = False
+        for i in range(4):
+            for j in range(4):
+                if i * 4 + j in self.figure.image():
+                    if i + self.figure.y > self.height - 1 or \
+                            j + self.figure.x > self.width - 1 or \
+                            j + self.figure.x < 0 or \
+                            self.field[i + self.figure.y][j + self.figure.x] > 0:
+                        intersection = True
+        return intersection
+
+    def freeze(self):
+        for i in range(4):
+            for j in range(4):
+                if i * 4 + j in self.figure.image():
+                    self.field[i + self.figure.y][j + self.figure.x] = self.figure.color
+        self.break_lines()
+        self.new_figure()
+        if self.intersects():
+            self.state = "gameover"
+
+    def break_lines(self):
+        lines = 0
+        for i in range(1, self.height):
+            zeros = 0
+            for j in range(self.width):
+                if self.field[i][j] == 0:
+                    zeros += 1
+            if zeros == 0:
+                lines += 1
+                for i2 in range(i, 1, -1):
+                    for j in range(self.width):
+                        self.field[i2][j] = self.field[i2 - 1][j]
+        self.score += lines ** 2
+
+    def go_space(self):
+        while not self.intersects():
+            self.figure.y += 1
+        self.figure.y -= 1
+        self.freeze()
+
+    def go_down(self):
+        self.figure.y += 1
+        if self.intersects():
+            self.figure.y -= 1
+            self.freeze()
     
-    
+    def go_side(self, dx):
+        old_x = self.figure.x
+        self.figure.x += dx
+        if self.intersects():
+            self.figure.x = old_x
 
-    if not started:
-        WIN.blit(pygame.font.SysFont('comicsans', 60).render('TETRIS', 1, RED), (100, 100))
-        WIN.blit(pygame.font.SysFont('comicsans', 40).render('Press SPACE to start playing', 1, RED), (400, 600))
-    else:
-        WIN.blit(pygame.font.SysFont('comicsans', 60).render('TETRIS', 1, RED), (100, 100))
+    def rotate(self):
+        old_rotation = self.figure.rotation
+        self.figure.rotate()
+        if self.intersects():
+            self.figure.rotation = old_rotation
 
-        # Draw the locked figures / and land figures?
-        for blocks in locked_figures:
-            for x, y in blocks:
-                pygame.draw.rect(WIN, RED, (x, y, block_size, block_size))
-        add_to_board(figure.get_blocks(), locked_figures)
         
-        if not figure.locked:
-            for i, block in enumerate(figure.get_blocks()):
-                x = (block % 4) * block_size + figure.x
-                y = (block // 4) * block_size + figure.y[i]
-                pygame.draw.rect(WIN, figure.color, (x, y, block_size, block_size))
-            
-            # Update the y coordinate of each block
-            figure.y = [y + figure.dy for y in figure.y]
-            for y in figure.y:
-                if y >= WIN_HEIGHT - block_size:
-                    figure.locked = True
-                    break
-                
-        if figure.locked:
-            # Lock the figure in place and spawn a new one
-            Figure.get_blocks(figure) 
-            figure.spawn()
-            figure.locked = False
-    
-    pygame.draw.rect(WIN, RED, (515, -1, 250, 501), 1) #640 e mitten av skärmen. 
-    #Fabian säger att en cell är 25, vilket då menar att bredden blir 250 och höjd blir 500.
-
-    pygame.display.update()
-
-
-    
 
 #Frames per second
 fps = 30
 
-#figure = Figure(100, 0)
+clock = pygame.time.Clock()
 
-#game loop
-def main():
-    global figure
-    
-    clock = pygame.time.Clock()
-    run = True
+#Check if the game has started
+started = False
 
-    #Check if the game has started
-    started = False
-    
-    # Initialize the figure object
-    figure = Figure(WIN_HEIGHT // 2)
-   
-    
-    # List of locked figures
-    locked_figures = [] 
-    
-    while run:
-        clock.tick(fps)
+run = True
 
-        # Handle events
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
+game = Main(20, 10)
+counter = 0
+
+pressing_down = False
+    
+while run:
+    clock.tick(fps)
+
+    if game.figure is None:
+            game.new_figure()
         
-            keys_pressed = pygame.key.get_pressed()
+    counter += 1
 
-            if not started:
-                if keys_pressed[pygame.K_SPACE]:
-                    started = True
-                    print("Game started")
+    if counter > 100000:
+        counter = 0
+
+    if counter % (fps // game.level // 2) == 0 or pressing_down:
+        if game.state == "start":
+            game.go_down()
             
+        #keys_pressed = pygame.key.get_pressed()
 
-            if keys_pressed[pygame.K_LEFT]:
-                figure.move_left()
-                print("Left arrow pressed")
-            if keys_pressed[pygame.K_RIGHT]:
-                figure.move_right()
-                print("Right arrow pressed")
-            if keys_pressed[pygame.K_UP]:
-                figure.rotate()
-                print("Up arrow pressed")
-            if keys_pressed[pygame.K_DOWN]:
-                figure.dy = 50
-                print("Down arrow pressed")
-                
+    # Handle events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
 
-        # Draw window
-        drawWindow(started, locked_figures)
-        
-        if figure.locked:
-            locked_figures.append(figure.get_blocks())
-            figure = Figure(WIN_HEIGHT // 2, 0)
-        if not run:
-            break
+        #Handle key presses
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                game.rotate()
+            if event.key == pygame.K_DOWN:
+                game.go_down()
+            if event.key == pygame.K_LEFT:
+                game.go_side(-1)
+            if event.key == pygame.K_RIGHT:
+                game.go_side(1)
+            if event.key == pygame.K_SPACE:
+                game.go_space()
+            if event.key == pygame.K_ESCAPE:
+                run = False
+
+    if event.type == pygame.KEYUP:
+        if event.key == pygame.K_DOWN:
+            pressing_down = False
+
+    #Draw the background
+    WIN.fill(WHITE)
+
+    #Draw the grid
+    for i in range(game.height):
+        for j in range(game.width):
+            pygame.draw.rect(WIN, GRAY, [game.x + game.zoom * j, game.y + game.zoom * i, game.zoom, game.zoom], 1)
+            if game.field[i][j] > 0:
+                pygame.draw.rect(WIN, Figure.colors[game.field[i][j]],
+                                 [game.x + game.zoom * j + 1, game.y + game.zoom * i + 1, game.zoom - 2, game.zoom - 1])
+
+    if game.figure is not None:
+        for i in range(4):
+            for j in range(4):
+                p = i * 4 + j
+                if p in game.figure.image():
+                    pygame.draw.rect(WIN, game.figure.color,
+                                     [game.x + game.zoom * (j + game.figure.x) + 1,
+                                      game.y + game.zoom * (i + game.figure.y) + 1,
+                                      game.zoom - 2, game.zoom - 2])
+
+    font = pygame.font.SysFont('comicsans', 25, True, False)
+    font2 = pygame.font.SysFont('comicsans', 50, True, False)
+    text = font.render("Score: " + str(game.score), True, RED)
+    text_over = font2.render("Game Over", True, RED)
+    text2_over = font2.render("Press ESC to quit", True, RED)
+
+
+    WIN.blit(text, [0, 0])
     
-#Om jag förstår rätt så är det här en restraint så att man inte kan köra programmet utanför main funktionen eller MainGame.py filen
-if __name__ == "__main__":
-    main()
-    pygame.quit()
-    sys.exit()   
+    if game.state == "gameover":
+        WIN.blit(text_over, [20, 200])
+        WIN.blit(text2_over, [20, 300])
+        started = False
+        game = Main(20, 10)
+        counter = 0
+        pressing_down = False
+    
+    pygame.display.flip()
+    clock.tick(fps)
+
+pygame.quit()
+    
+        
+        
+
+        
+
+    
+    
+    
+    
+
+                    
+
+ 
