@@ -1,17 +1,14 @@
 import random
 import sys
 import pygame
-pygame.init()
-screen_width = 1280
-screen_height = 720
+
 white = (255, 255, 255)
 block_size = 25
-WIN = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Tetris")
-clock = pygame.time.Clock()
-#fps = 1
 
 class Figure:
+    x = 0
+    y = 0
+
     colors = [
     (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 128, 0), (255, 255, 0), (178, 255, 102),  
     ]
@@ -19,21 +16,27 @@ class Figure:
         [[4, 5, 6, 7], [1, 5, 9, 13]], #I-block
         [[1, 4, 5, 6], [1, 4, 5, 9], [4, 5, 6, 9], [1, 5, 6, 9]], #T-block
         [[1, 2, 5, 4], [1, 5, 6, 10], [1, 2, 6, 7], [3, 6, 7, 10]], #S-block
-        [[1, 2, 5, 6]] #O-block     
+        [[1, 2, 5, 6]], #O-block
+        [[1, 5, 6, 7], [3, 5, 6, 7], [1, 2, 6, 10], [3, 2, 6, 10], [1, 5, 9, 8], [1, 5, 9, 10], [4, 5, 6, 10], [4, 5, 6, 8]], #L-block
+ 
     ] 
     
     #Type and color of block generated randomly
-    def __init__(self, height):
+    def __init__(self, x, y):
         
-        self.x = 4
-        self.y = [0] * 4
+        self.x = x
+        self.y = y
         self.type = random.randint(0, len(self.figures) - 1)
+        self.color = random.randint(1, len(Figure.colors) - 1)
+        self.rotation = 0
+
+        '''
         self.color = (255, 255, 255)
         self.rotation = 0
         self.dy = block_size
         self.locked = False
         
-        self.current_block = self.figures[self.type][self.rotation]
+        self.current_block = self.figures[self.type][self.rotation]'''
         #
         
         
@@ -63,7 +66,7 @@ class Figure:
       
     def rotate(self):
         self.rotation = (self.rotation + 1) % len(self.figures[self.type])
-        self.current_block = self.figures[self.type][self.rotation]
+        #self.current_block = self.figures[self.type][self.rotation]
         
     def move_left(self):
         self.x -= block_size
@@ -86,6 +89,7 @@ class Figure:
         self.y = [0] * 4
         self.color = (255, 255, 255)
         self.locked = False
+    
     def get_blocks(self):
         blocks = []
         for i, block in enumerate(self.image):
