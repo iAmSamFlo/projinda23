@@ -1,3 +1,4 @@
+import time
 from tetris import Figure
 import random
 import pygame
@@ -16,6 +17,7 @@ WHITE = (255, 255, 255)
 GRAY = (128, 128, 128)
 BlACK = (0, 0, 0)
 RED = (255, 0, 0)
+BLUE = (0, 0, 255)
 
 
 class Main:
@@ -119,102 +121,115 @@ game = Main(20, 10)
 counter = 0
 
 pressing_down = False
+
+font = pygame.font.SysFont('comicsans', 25, True, False)
+font2 = pygame.font.SysFont('comicsans', 50, True, False)
     
 while run:
     clock.tick(fps)
-
-    if game.figure is None:
-            game.new_figure()
-        
-    counter += 1
-
-    if counter > 100000:
-        counter = 0
-
-    if counter % (fps // game.level // 2) == 0 or pressing_down:
-        if game.state == "start":
-            game.go_down()
-            
-        #keys_pressed = pygame.key.get_pressed()
 
     # Handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                started = True
+            elif event.key == pygame.K_ESCAPE:
+                run = False
+
+    # Draw the start window
+    if not started and game.state == "start":
+        WIN.fill(WHITE)
+        start_text = font.render("Press ENTER to start", 1, RED)
+        tetris = font2.render("Tetris", 1, BLUE)
+        start_image = pygame.image.load('start_pic.png')
+        WIN.blit(start_image, (166, 50))
+        WIN.blit(tetris, (320, -10))
+        WIN.blit(start_text, (265, 515))
+        pygame.display.update()
+        continue
+
+    #Check if the game has started
+    if started:
+        if game.figure is None:
+                game.new_figure()
+            
+        counter += 1
+
+        if counter > 100000:
+            counter = 0
+
+        if counter % (fps // game.level // 2) == 0 or pressing_down:
+            if game.state == "start":
+                game.go_down()
 
         #Handle key presses
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 game.rotate()
+                time.sleep(0.2)
             if event.key == pygame.K_DOWN:
                 game.go_down()
             if event.key == pygame.K_LEFT:
                 game.go_side(-1)
+                time.sleep(0.1)
             if event.key == pygame.K_RIGHT:
                 game.go_side(1)
-            if event.key == pygame.K_SPACE:
+                time.sleep(0.1)
+
+            #Min space bar funkar inte för mig /Samflo
+            if event.key == pygame.K_LSHIFT  or event.key == pygame.K_RSHIFT:
+                print("space check")
                 game.go_space()
+                time.sleep(0.2)
+
             if event.key == pygame.K_ESCAPE:
                 run = False
 
-    if event.type == pygame.KEYUP:
-        if event.key == pygame.K_DOWN:
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_DOWN:
+                pressing_down = False
+
+        #Draw the background
+        WIN.fill(WHITE)
+
+        #Draw the grid
+        for i in range(game.height):
+            for j in range(game.width):
+                pygame.draw.rect(WIN, GRAY, [game.x + game.zoom * j, game.y + game.zoom * i, game.zoom, game.zoom], 1)
+                if game.field[i][j] > 0:
+                    pygame.draw.rect(WIN, Figure.colors[game.field[i][j]],
+                                    [game.x + game.zoom * j + 1, game.y + game.zoom * i + 1, game.zoom - 2, game.zoom - 1])
+
+        #Draw the current figure
+        if game.figure is not None:
+            for i in range(4):
+                for j in range(4):
+                    p = i * 4 + j
+                    if p in game.figure.image():
+                        pygame.draw.rect(WIN, game.figure.color,
+                                        [game.x + game.zoom * (j + game.figure.x) + 1,
+                                        game.y + game.zoom * (i + game.figure.y) + 1,
+                                        game.zoom - 2, game.zoom - 2])
+
+        
+        text = font.render("Score: " + str(game.score), True, RED)
+        text_over = font2.render("Game Over", True, RED)
+        text2_over = font2.render("Press ESC to quit", True, RED)
+
+
+        WIN.blit(text, [0, 0])
+        
+        if game.state == "gameover":
+            WIN.blit(text_over, [20, 200])
+            WIN.blit(text2_over, [20, 300])
+            started = False
+            game = Main(20, 10)
+            counter = 0
             pressing_down = False
-
-    #Draw the background
-    WIN.fill(WHITE)
-
-    #Draw the grid
-    for i in range(game.height):
-        for j in range(game.width):
-            pygame.draw.rect(WIN, GRAY, [game.x + game.zoom * j, game.y + game.zoom * i, game.zoom, game.zoom], 1)
-            if game.field[i][j] > 0:
-                pygame.draw.rect(WIN, Figure.colors[game.field[i][j]],
-                                 [game.x + game.zoom * j + 1, game.y + game.zoom * i + 1, game.zoom - 2, game.zoom - 1])
-
-    #Draw the current figure
-    if game.figure is not None:
-        for i in range(4):
-            for j in range(4):
-                p = i * 4 + j
-                if p in game.figure.image():
-                    pygame.draw.rect(WIN, game.figure.color,
-                                     [game.x + game.zoom * (j + game.figure.x) + 1,
-                                      game.y + game.zoom * (i + game.figure.y) + 1,
-                                      game.zoom - 2, game.zoom - 2])
-
-    font = pygame.font.SysFont('comicsans', 25, True, False)
-    font2 = pygame.font.SysFont('comicsans', 50, True, False)
-    text = font.render("Score: " + str(game.score), True, RED)
-    text_over = font2.render("Game Over", True, RED)
-    text2_over = font2.render("Press ESC to quit", True, RED)
-
-
-    WIN.blit(text, [0, 0])
-    
-    if game.state == "gameover":
-        WIN.blit(text_over, [20, 200])
-        WIN.blit(text2_over, [20, 300])
-        started = False
-        game = Main(20, 10)
-        counter = 0
-        pressing_down = False
     
     pygame.display.flip()
     clock.tick(fps)
 
 pygame.quit()
-    
-        
-        
-
-        
-
-    
-    
-    
-    
-
-                    
-
- 
