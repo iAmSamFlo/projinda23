@@ -1,15 +1,8 @@
 from tetris import Figure
 import random
-import sys
 import pygame
 
-
-
-
-#I terminalen: pip install opencv-python
-
 #This is where the mainGame loop and graphics are handled for tetris
-
 pygame.init()
 
 #Set up the screen
@@ -179,6 +172,7 @@ while run:
                 pygame.draw.rect(WIN, Figure.colors[game.field[i][j]],
                                  [game.x + game.zoom * j + 1, game.y + game.zoom * i + 1, game.zoom - 2, game.zoom - 1])
 
+    #Draw the current figure
     if game.figure is not None:
         for i in range(4):
             for j in range(4):

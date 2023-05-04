@@ -37,8 +37,6 @@ class Figure:
         self.locked = False
         
         self.current_block = self.figures[self.type][self.rotation]'''
-        #
-        
         
     """ 
     def blocks(delay):
@@ -96,14 +94,4 @@ class Figure:
             x = (block % 4) * block_size + self.x
             y = (block // 4) * block_size + self.y[i]
             blocks.append(((x, y), self.colors))
-        return blocks
-        
-    
-
-
-#figure = Figure(100, 0)
-    
- 
-        
-    
-            
+        return blocks        
