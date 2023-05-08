@@ -19,6 +19,10 @@ BlACK = (0, 0, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
+#leaderboard
+leaderboard = []
+highscoreCheck = False
+
 
 class Main:
     level = 2 
@@ -31,6 +35,7 @@ class Main:
     y = 60
     zoom = 20
     figure = None
+    
 
     #Initialize the field
     def __init__(self, height, width):
@@ -66,6 +71,7 @@ class Main:
         self.new_figure()
         if self.intersects():
             self.state = "gameover"
+            
 
     def break_lines(self):
         lines = 0
@@ -80,6 +86,10 @@ class Main:
                     for j in range(self.width):
                         self.field[i2][j] = self.field[i2 - 1][j]
         self.score += lines ** 2
+
+        #Increase the level every 10 points
+        if self.score % 10 == 0 and self.score != 0:
+            self.level += 0.5
 
     def go_space(self):
         while not self.intersects():
@@ -105,7 +115,21 @@ class Main:
         if self.intersects():
             self.figure.rotation = old_rotation
 
+    def restart(self):
+        self.state = "start"
+        self.score = 0
+        self.field = []
+        self.height = 0
+        self.width = 0
+        self.x = 100
+        self.y = 60
+        self.zoom = 20
+        self.figure = None
+        self.level = 2
+        self.__init__(20, 10)
         
+
+    
 
 #Frames per second
 fps = 30
@@ -124,6 +148,8 @@ pressing_down = False
 
 font = pygame.font.SysFont('comicsans', 25, True, False)
 font2 = pygame.font.SysFont('comicsans', 50, True, False)
+
+
     
 while run:
     clock.tick(fps)
@@ -135,20 +161,24 @@ while run:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 started = True
+                highscoreCheck = False
+                game.restart()
+
             elif event.key == pygame.K_ESCAPE:
                 run = False
 
     # Draw the start window
-    if not started and game.state == "start":
-        WIN.fill(WHITE)
-        start_text = font.render("Press ENTER to start", 1, RED)
-        tetris = font2.render("Tetris", 1, BLUE)
-        start_image = pygame.image.load('start_pic.png')
-        WIN.blit(start_image, (166, 50))
-        WIN.blit(tetris, (320, -10))
-        WIN.blit(start_text, (265, 515))
-        pygame.display.update()
-        continue
+    if not started:
+        if game.state == "start":
+            WIN.fill(WHITE)
+            start_text = font.render("Press ENTER to start", 1, RED)
+            tetris = font2.render("Tetris", 1, BLUE)
+            start_image = pygame.image.load('start_pic.png')
+            WIN.blit(start_image, (166, 50))
+            WIN.blit(tetris, (320, -10))
+            WIN.blit(start_text, (265, 515))
+            pygame.display.update()
+            continue
 
     #Check if the game has started
     if started:
@@ -169,22 +199,19 @@ while run:
             if event.key == pygame.K_UP:
                 game.rotate()
                 time.sleep(0.2)
-            if event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_DOWN:
                 game.go_down()
-            if event.key == pygame.K_LEFT:
+            elif event.key == pygame.K_LEFT:
                 game.go_side(-1)
                 time.sleep(0.1)
-            if event.key == pygame.K_RIGHT:
+            elif event.key == pygame.K_RIGHT:
                 game.go_side(1)
                 time.sleep(0.1)
-
-            #Min space bar funkar inte för mig /Samflo
-            if event.key == pygame.K_LSHIFT  or event.key == pygame.K_RSHIFT:
-                print("space check")
+            elif event.key == pygame.K_SPACE:
+                print("space check") #debug
                 game.go_space()
                 time.sleep(0.2)
-
-            if event.key == pygame.K_ESCAPE:
+            elif event.key == pygame.K_ESCAPE:
                 run = False
 
         if event.type == pygame.KEYUP:
@@ -221,13 +248,32 @@ while run:
 
         WIN.blit(text, [0, 0])
         
-        if game.state == "gameover":
-            WIN.blit(text_over, [20, 200])
-            WIN.blit(text2_over, [20, 300])
-            started = False
-            game = Main(20, 10)
-            counter = 0
-            pressing_down = False
+    if game.state == "gameover":
+        
+        #add to leaderboard
+        if game.score > 0 and highscoreCheck == False:
+            with open('leaderboard.txt', 'a') as f:
+                f.write(str(game.score) + "\n")
+                highscoreCheck = True
+            
+            #check if the score is a new high score
+            with open('leaderboard.txt', 'r') as f:
+                lines = f.readlines()
+                lines = [int(i.strip()) for i in lines]
+                if game.score > max(lines):
+                    new_high_score = True
+                    print("new high score")
+                else:
+                    new_high_score = False
+        
+
+        WIN.fill(WHITE)
+        gameover_text = font2.render("gameover", 1, RED)
+        restart_text = font.render("Press ENTER to restart", 1, RED)
+        WIN.blit(restart_text, (200, 500))
+        WIN.blit(gameover_text, (200, 250))
+        pygame.display.update()
+        continue
     
     pygame.display.flip()
     clock.tick(fps)
