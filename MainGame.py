@@ -87,17 +87,12 @@ class Main:
                     for j in range(self.width):
                         self.field[i2][j] = self.field[i2 - 1][j]
         self.score += lines ** 2
-<<<<<<< HEAD
-    
-    def go_space(self): #Move the figure all the way down when spacebar is pressed using the `move_down` function from `Figure`
-=======
 
         #Increase the level every 10 points
         if self.score % 10 == 0 and self.score != 0:
             self.level += 0.5
 
-    def go_space(self):
->>>>>>> 814b9125bd13e70535d917e771e634947aa829ea
+    def go_space(self): #Move the figure all the way down when spacebar is pressed using the `move_down` function from `Figure`
         while not self.intersects():
             self.figure.y += 1
         self.figure.y -= 1
@@ -154,13 +149,8 @@ pressing_down = False
 
 font = pygame.font.SysFont('comicsans', 25, True, False)
 font2 = pygame.font.SysFont('comicsans', 50, True, False)
-<<<<<<< HEAD
- #Main game loop
-=======
 
-
-    
->>>>>>> 814b9125bd13e70535d917e771e634947aa829ea
+#Main game loop
 while run:
     clock.tick(fps) 
 
@@ -208,13 +198,8 @@ while run:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 game.rotate()
-<<<<<<< HEAD
-                time.sleep(0.1)
-            if event.key == pygame.K_DOWN:
-=======
                 time.sleep(0.2)
             elif event.key == pygame.K_DOWN:
->>>>>>> 814b9125bd13e70535d917e771e634947aa829ea
                 game.go_down()
             elif event.key == pygame.K_LEFT:
                 game.go_side(-1)
@@ -263,15 +248,6 @@ while run:
         #Draw the text on the screen
         WIN.blit(text, [0, 0])
         
-<<<<<<< HEAD
-        if game.state == "gameover": #Draw the game over text
-            WIN.blit(text_over, [20, 200])
-            WIN.blit(text2_over, [20, 300])
-            started = False
-            game = Main(20, 10)
-            counter = 0
-            pressing_down = False
-=======
     if game.state == "gameover":
         
         #add to leaderboard
@@ -298,7 +274,6 @@ while run:
         WIN.blit(gameover_text, (200, 250))
         pygame.display.update()
         continue
->>>>>>> 814b9125bd13e70535d917e771e634947aa829ea
     
     pygame.display.flip()
     clock.tick(fps)
