@@ -3,13 +3,13 @@ import sys
 import pygame
 
 white = (255, 255, 255)
-block_size = 25
+block_size = 25 
 
 class Figure:
-    x = 0
-    y = 0
+    x = 0 #Horizontal position of the block
+    y = 0 #Vertical position of the block
 
-    colors = [
+    colors = [ #All possible colors of the tetrominos
     (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 128, 0), (255, 255, 0), (178, 255, 102),  
     ]
     figures =[
@@ -23,74 +23,44 @@ class Figure:
  
     ] 
     
-    #Type and color of block generated randomly
+    #Type, color and rotation of block generated randomly at the start of the game
     def __init__(self, x, y):
-        
         self.x = x
         self.y = y
         self.type = random.randint(0, len(self.figures) - 1)
         self.color = random.randint(1, len(Figure.colors) - 1)
         self.rotation = 0
 
-        '''
-        self.color = (255, 255, 255)
-        self.rotation = 0
-        self.dy = block_size
-        self.locked = False
-        
-        self.current_block = self.figures[self.type][self.rotation]'''
-        
-    """ 
-    def blocks(delay):
-        if not figure.locked:
-            #Update each block of the figure and reset it at the top if it reaches the bottom
-            for i, block in enumerate(figure.image()):
-                x = (block % 4) * block_size + figure.x
-                y = (block // 4) * block_size + figure.y[i]
-                pygame.draw.rect(WIN, figure.color, (x, y, block_size, block_size))
-                figure.y= [y + figure.dy for y in figure.y]
-                
-                if y >= screen_height - block_size:
-                    figure.locked = True
-                    break
             
-            pygame.time.delay(delay)
-
-            # if figure.y[i] >= 480:
-            #     figure.y[i] = 0
-            #     figure.type = random.randint(0, len(figure.figures) - 1)
-            #     figure.color = (255, 255, 255) """
-            
-    def image(self):
+    def image(self): #returns the current state of the figure as an image on the board
         return self.figures[self.type][self.rotation]
       
-    def rotate(self):
+    def rotate(self): #rotate the figure to the next rotation (clockwise)
         self.rotation = (self.rotation + 1) % len(self.figures[self.type])
-        #self.current_block = self.figures[self.type][self.rotation]
         
-    def move_left(self):
+    def move_left(self): #move the figure one block to the left
         self.x -= block_size
     
-    def move_right(self):
+    def move_right(self): #move the figure one block to the right
         self.x += block_size
         
-    def lock(self):
+    def lock(self): #locks the figure in place, when it reaches the bottom
         self.locked = True
     
-    def move_down(self):
+    def move_down(self): #moves the figure one block down
         for i in range(len(self.y)):
             self.y[i] += self.dy
         
-    def spawn(self):
+    def spawn(self): #spawns a new figure, when the current one reaches the bottom
         self.type = random.randint(0, len(self.figures) - 1)
         self.rotation = 0
         self.current_block = self.figures[self.type][self.rotation]
         self.x = 4
         self.y = [0] * 4
-        self.color = (255, 255, 255)
+        self.color = random.randint(0, len(self.colors))
         self.locked = False
     
-    def get_blocks(self):
+    def get_blocks(self): #draws the current state of the figure on the board, returns a list of x, y values and color
         blocks = []
         for i, block in enumerate(self.image):
             x = (block % 4) * block_size + self.x
