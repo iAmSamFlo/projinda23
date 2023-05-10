@@ -68,7 +68,7 @@ class Main:
                 if i * 4 + j in self.figure.image():
                     self.field[i + self.figure.y][j + self.figure.x] = self.figure.color
         self.break_lines()
-        time.sleep(0.5)
+        time.sleep(0.1)
         self.new_figure()
         if self.intersects():
             self.state = "gameover"
@@ -128,7 +128,28 @@ class Main:
         self.figure = None
         self.level = 2
         self.__init__(20, 10)
-        
+
+def check_leaderboard(): #update the list to only have the top 5 scores
+    global leaderboard
+ 
+    #iterate through leaderboard.txt and add the five best scores to the leaderboard list
+    with open("leaderboard.txt", "r") as f:
+        for line in f:
+            leaderboard.append(int(line))
+            leaderboard.sort(reverse=True)
+            if len(leaderboard) > 5:
+                leaderboard.remove(leaderboard[5])
+    
+def draw_leaderboard():
+    #draw the leaderboard
+        leaderboard_text = font.render("Leaderboard", 1, RED)
+        WIN.blit(leaderboard_text, (500, 100))
+        for i in range(len(leaderboard)):
+            score = leaderboard[i]
+            leaderboard_text = font.render(str(i+1) + ". " + str(score), 1, RED)
+            WIN.blit(leaderboard_text, (500, 150 + 50*i))
+            
+
 
     
 
@@ -162,6 +183,8 @@ while run:
             if event.key == pygame.K_RETURN:
                 started = True
                 highscoreCheck = False
+                check_leaderboard()
+                #print(leaderboard)
                 game.restart()
 
             elif event.key == pygame.K_ESCAPE:
@@ -247,6 +270,7 @@ while run:
 
         #Draw the text on the screen
         WIN.blit(text, [0, 0])
+        draw_leaderboard()
         
     if game.state == "gameover":
         
@@ -265,6 +289,12 @@ while run:
                     print("new high score")
                 else:
                     new_high_score = False
+
+        #check new leaderboard
+        leaderboard.clear()
+        check_leaderboard()
+
+        
         
 
         WIN.fill(WHITE)
@@ -272,6 +302,9 @@ while run:
         restart_text = font.render("Press ENTER to restart", 1, RED)
         WIN.blit(restart_text, (200, 500))
         WIN.blit(gameover_text, (200, 250))
+
+        draw_leaderboard()       
+        
         pygame.display.update()
         continue
     
