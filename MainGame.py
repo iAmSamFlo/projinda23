@@ -68,6 +68,7 @@ class Main:
                 if i * 4 + j in self.figure.image():
                     self.field[i + self.figure.y][j + self.figure.x] = self.figure.color
         self.break_lines()
+        time.sleep(0.5)
         self.new_figure()
         if self.intersects():
             self.state = "gameover"
