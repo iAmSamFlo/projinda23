@@ -13,6 +13,9 @@ Det här är första gången som vi jobbar i python och ser det som en rolig utm
 Tanken är att använda Pygame som libary när vi bygger spelet.
 
 I grunden bör det finnas kunskap om spelets game mechanics, något som kan finnas [här](https://tetris.wiki/Tetris_Guideline).
+Kort förklarat är det ett pusselspel som handlar om att matcha olika figurer med utrymmen för att minska antalet tomma rutor som möjligt under tidspress.
+Än så länge går spelet inte att vinna, utan bara att förlora. Det sker då en figur når toppen av spelplanen, detta hindras genom att få en hel rad
+täckt med figurer, då elimineras den raden, och raderna ovan flyttas ned ett steg.
 
 Efter detta bör vi implementera spelets funktioner, och utseende inlkudernade spelobjekt, men även input från spelaren så att det blir interaktivt.
 Ett poängsystem skulle också vara intressant och nivåer för spelaren.
