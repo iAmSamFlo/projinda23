@@ -1,8 +1,6 @@
 import time
 from tetris import Figure
-import random
 import pygame
-
 
 #This is where the mainGame loop and graphics are handled for tetris
 pygame.init()
@@ -24,7 +22,6 @@ BLUE = (0, 0, 255)
 leaderboard = []
 highscoreCheck = False
 
-
 class Main:
     level = 2 
     score = 0
@@ -37,7 +34,6 @@ class Main:
     zoom = 20
     figure = None
     
-
     #Initialize the field
     def __init__(self, height, width):
         self.height = height
@@ -74,7 +70,6 @@ class Main:
         if self.intersects():
             self.state = "gameover"
             
-
     def break_lines(self): #Break lines when they are full, this is where the score is calculated and the figures above move down one row
         lines = 0
         for i in range(1, self.height):
@@ -137,18 +132,13 @@ def check_leaderboard(): #update the list to only have the top 5 scores
             if len(leaderboard) > 5:
                 leaderboard.remove(leaderboard[5])
     
-def draw_leaderboard():
-    #draw the leaderboard
-        leaderboard_text = font.render("Leaderboard", 1, RED)
-        WIN.blit(leaderboard_text, (500, 100))
-        for i in range(len(leaderboard)):
-            score = leaderboard[i]
-            leaderboard_text = font.render(str(i+1) + ". " + str(score), 1, RED)
-            WIN.blit(leaderboard_text, (500, 150 + 50*i))
-            
-
-
-    
+def draw_leaderboard(): #draw the leaderboard
+    leaderboard_text = font.render("Top Scores", 1, RED)
+    WIN.blit(leaderboard_text, (500, 100))
+    for i in range(len(leaderboard)):
+        score = leaderboard[i]
+        leaderboard_text = font.render(str(i+1) + ". " + str(score), 1, RED)
+        WIN.blit(leaderboard_text, (500, 150 + 50*i))
 
 #Frames per second
 fps = 30
@@ -167,7 +157,8 @@ pressing_down = False
 
 font = pygame.font.SysFont('comicsans', 25, True, False)
 font2 = pygame.font.SysFont('comicsans', 50, True, False)
- #Main game loop
+
+#Main game loop
 while run:
     clock.tick(fps) 
     
@@ -191,7 +182,7 @@ while run:
                 if event.key == pygame.K_DOWN:
                     game.go_down()
                 if event.key == pygame.K_SPACE:
-                    print("space check") #debug
+                    #print("space check") #debug
                     game.go_space()
                     time.sleep(0.2)
                 if event.key == pygame.K_LEFT:
@@ -203,6 +194,7 @@ while run:
             
             if event.key == pygame.K_ESCAPE:
                 run = False
+
     # Draw the start window
     if not started:
         if game.state == "start":
@@ -286,9 +278,6 @@ while run:
         #check new leaderboard
         leaderboard.clear()
         check_leaderboard()
-
-        
-        
 
         WIN.fill(WHITE)
         gameover_text = font2.render("gameover", 1, RED)

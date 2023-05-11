@@ -1,6 +1,4 @@
 import random
-import sys
-import pygame
 
 white = (255, 255, 255)
 block_size = 25 
@@ -12,6 +10,7 @@ class Figure:
     colors = [ #All possible colors of the tetrominos
     (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 128, 0), (255, 255, 0), (178, 255, 102),  
     ]
+    
     figures =[
         [[4, 5, 6, 7], [2, 6, 10, 14], [8, 9, 10, 11], [1, 5, 9, 13]], #I-block
         [[1, 4, 5, 6], [1, 5, 6, 9], [4, 5, 6, 9], [1, 4, 5, 9]], #T-block
@@ -20,7 +19,6 @@ class Figure:
         [[1, 2, 5, 6]], #O-block
         [[0, 4, 5, 6], [1, 2, 5, 9], [4, 5, 6, 10], [1, 5, 8, 9]], #L-block1
         [[2, 4, 5, 6], [1, 5, 9, 10], [4, 5, 6, 8], [0, 1, 5, 9]], #L-block2
- 
     ] 
     
     #Type, color and rotation of block generated randomly at the start of the game
@@ -30,8 +28,7 @@ class Figure:
         self.type = random.randint(0, len(self.figures) - 1)
         self.color = random.randint(1, len(Figure.colors) - 1)
         self.rotation = 0
-
-            
+     
     def image(self): #returns the current state of the figure as an image on the board
         return self.figures[self.type][self.rotation]
       
