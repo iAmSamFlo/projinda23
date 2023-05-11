@@ -26,7 +26,7 @@ Om allt detta går snabbt att implementera så finns det även ideer om att gör
 
 Premilinärt så gissar vi att spelet startas i terminalen och då behövs nog det laddas ner från denna repo.
 
-###Post
+### Post
 
 Tetris går nu att spela från den kod som vi har utvecklat. Det funkar genom att klona repon och sedan se till att pygame är nerladdat på datorn samt python3. Spelet startas från Maingame.py. 
 
