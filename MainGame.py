@@ -3,6 +3,7 @@ from tetris import Figure
 import random
 import pygame
 
+
 #This is where the mainGame loop and graphics are handled for tetris
 pygame.init()
 
@@ -28,9 +29,9 @@ class Main:
     level = 2 
     score = 0
     state = "start"
-    field = []
     height = 0
     width = 0
+    field = []
     x = 100
     y = 60
     zoom = 20
@@ -87,11 +88,7 @@ class Main:
                     for j in range(self.width):
                         self.field[i2][j] = self.field[i2 - 1][j]
         self.score += lines ** 2
-
-        #Increase the level every 10 points
-        if self.score % 10 == 0 and self.score != 0:
-            self.level += 0.5
-
+    
     def go_space(self): #Move the figure all the way down when spacebar is pressed using the `move_down` function from `Figure`
         while not self.intersects():
             self.figure.y += 1
@@ -170,11 +167,10 @@ pressing_down = False
 
 font = pygame.font.SysFont('comicsans', 25, True, False)
 font2 = pygame.font.SysFont('comicsans', 50, True, False)
-
-#Main game loop
+ #Main game loop
 while run:
     clock.tick(fps) 
-
+    
     #Handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -186,10 +182,27 @@ while run:
                 check_leaderboard()
                 #print(leaderboard)
                 game.restart()
-
-            elif event.key == pygame.K_ESCAPE:
+            if started:
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+                if event.key == pygame.K_UP:
+                    game.rotate()
+                    time.sleep(0.05)
+                if event.key == pygame.K_DOWN:
+                    game.go_down()
+                if event.key == pygame.K_SPACE:
+                    print("space check") #debug
+                    game.go_space()
+                    time.sleep(0.2)
+                if event.key == pygame.K_LEFT:
+                    game.go_side(-1)
+                    time.sleep(0.05)
+                if event.key == pygame.K_RIGHT:
+                    game.go_side(1)
+                    time.sleep(0.05)
+            
+            if event.key == pygame.K_ESCAPE:
                 run = False
-
     # Draw the start window
     if not started:
         if game.state == "start":
@@ -217,27 +230,7 @@ while run:
             if game.state == "start":
                 game.go_down()
 
-        #Handle key presses
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                game.rotate()
-                time.sleep(0.2)
-            elif event.key == pygame.K_DOWN:
-                game.go_down()
-            elif event.key == pygame.K_LEFT:
-                game.go_side(-1)
-                time.sleep(0.1)
-            elif event.key == pygame.K_RIGHT:
-                game.go_side(1)
-                time.sleep(0.1)
-            elif event.key == pygame.K_SPACE:
-                print("space check") #debug
-                game.go_space()
-                time.sleep(0.2)
-            elif event.key == pygame.K_ESCAPE:
-                run = False
-
-        if event.type == pygame.KEYUP:
+        elif event.type == pygame.KEYUP:
             if event.key == pygame.K_DOWN:
                 pressing_down = False
 
@@ -271,7 +264,7 @@ while run:
         #Draw the text on the screen
         WIN.blit(text, [0, 0])
         draw_leaderboard()
-        
+    
     if game.state == "gameover":
         
         #add to leaderboard
