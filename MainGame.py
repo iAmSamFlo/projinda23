@@ -127,7 +127,7 @@ def check_leaderboard(): #update the list to only have the top 5 scores
     #iterate through leaderboard.txt and add the five best scores to the leaderboard list
     with open("leaderboard.txt", "r") as f:
         for line in f:
-            leaderboard.append(int(line))
+            leaderboard.append(line)
             leaderboard.sort(reverse=True)
             if len(leaderboard) > 5:
                 leaderboard.remove(leaderboard[5])
